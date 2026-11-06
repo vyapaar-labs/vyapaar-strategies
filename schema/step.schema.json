@@ -1,0 +1,53 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.vyapaar-labs.io/schema/step.schema.json",
+  "title": "Vyapaar step manifest",
+  "description": "Declarative step.toml manifest for the strategy catalog. Each manifest names a strategy class (module:Class) and its tunable parameters for visual-studio chaining and Rust StepManifest parsing.",
+  "type": "object",
+  "required": ["name", "title", "family", "version", "strategy", "params"],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "title": {
+      "type": "string"
+    },
+    "family": {
+      "type": "string",
+      "enum": [
+        "arbitrage",
+        "execution",
+        "market_making",
+        "mean_reversion",
+        "options",
+        "portfolio",
+        "size",
+        "trend"
+      ]
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "strategy": {
+      "type": "string",
+      "pattern": "^vyapaar_strategies\\.[A-Za-z0-9_.]+:[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "params": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["default"],
+        "properties": {
+          "default": {},
+          "min": {},
+          "max": {},
+          "step": {}
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

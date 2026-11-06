@@ -1,0 +1,26 @@
+name = "vwap"
+title = "VWAP Slicer"
+family = "execution"
+version = "1.0.0"
+strategy = "vyapaar_strategies.strategies.execution:VWAPSlicer"
+
+[params.instrument]
+default = "NSE:RELIANCE-EQ"
+
+[params.total_quantity]
+default = 100
+min = 1
+max = 1000000
+step = 1
+
+[params.slices]
+default = 10
+min = 1
+max = 500
+step = 1
+
+[params.side]
+default = "buy"
+
+[params.profile]
+default = "15,13,12,11,10,9,8,7,8,7"

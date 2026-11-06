@@ -1,0 +1,26 @@
+name = "turtle_breakout"
+title = "Turtle Breakout"
+family = "trend"
+version = "1.0.0"
+strategy = "vyapaar_strategies.strategies.turtle:TurtleBreakout"
+
+[params.instrument]
+default = "NSE:NIFTY50-INDEX"
+
+[params.entry_period]
+default = 20
+min = 5
+max = 60
+step = 1
+
+[params.exit_period]
+default = 10
+min = 5
+max = 60
+step = 1
+
+[params.quantity]
+default = 10
+min = 1
+max = 1000
+step = 1
