@@ -25,12 +25,41 @@ historical bars and live WebSocket feeds.
 
 ```
 vyapaar-strategies/
-├── vyapaar_strategies/   # Zone 1: strategy SDK + strategies
+├── vyapaar_strategies/   # Zone 1: strategy SDK + strategies + manifest models
 ├── catalog/              # Zone 2: declarative step.toml manifests
+├── manifests/            # Zone 2: versioned strategy & basket manifests (plan 0001)
+│   ├── strategies/       #   StrategyManifest sidecars (turtle_breakout, twap_slicer, ...)
+│   └── baskets/          #   BasketManifest groupings
 ├── tests/                # Zone 3: unit / parity / catalog schema validation
-├── schema/               # Zone 4: step.schema.json
+├── schema/               # Zone 4: step + strategy/basket manifest JSON schemas
 ├── tools/                # Zone 4: manifest linters
 └── docs/                 # Zone 4: architecture & migration guides
+```
+
+## Versioned Strategy Manifests & Baskets
+
+Every strategy can carry a versioned, promotable manifest (plan 0001, Layer 3):
+`name`, semver `version`, `module:Class` reference, parameter defaults, target
+instruments, and a capital allocation (absolute `Money` amount or weight). A
+`BasketManifest` groups several strategy versions under one combined capital and
+risk budget. Promotion follows `draft → backtested → paper → live`, each step
+requiring a justifying evidence reference.
+
+```python
+from vyapaar_strategies import BasketManifest, PromotionStatus, StrategyManifest
+
+turtle = StrategyManifest.load_toml("manifests/strategies/turtle_breakout.toml")
+turtle.promote(PromotionStatus.BACKTESTED, "backtest:run/2026-01-05/bt-123")
+
+basket = BasketManifest.load_toml("manifests/baskets/turtle_twap_basket.toml")
+for member in basket.member_strategies:  # weights are exact Decimal fractions
+    print(member.name, member.weight)
+```
+
+Validate every manifest sidecar with:
+
+```bash
+python tools/validate_manifests.py   # schema + model + strategy class + basket refs
 ```
 
 ## Quick Start

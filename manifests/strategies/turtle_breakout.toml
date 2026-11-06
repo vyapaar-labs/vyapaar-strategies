@@ -1,0 +1,31 @@
+name = "turtle_breakout"
+version = "0.1.0"
+strategy = "vyapaar_strategies.strategies.turtle:TurtleBreakout"
+promotion_status = "draft"
+
+[parameters.instrument]
+default = "NSE:NIFTY50-INDEX"
+
+[parameters.entry_period]
+default = 20
+min = 5
+max = 60
+step = 1
+
+[parameters.exit_period]
+default = 10
+min = 5
+max = 60
+step = 1
+
+[parameters.quantity]
+default = 10
+min = 1
+max = 1000
+step = 1
+
+[target_instruments]
+instruments = ["NSE:NIFTY50-INDEX"]
+
+[capital_allocation]
+weight = 0.5

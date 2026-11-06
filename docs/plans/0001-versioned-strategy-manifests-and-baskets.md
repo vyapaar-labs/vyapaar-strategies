@@ -1,6 +1,6 @@
 # 0001 — Versioned Strategy Manifests & Basket Strategies
 
-> **Status**: Proposed — not yet implemented.
+> **Status**: Implemented (2026-11-06) — Phases 1–3 shipped in `vyapaar-strategies` (Layer 3 of the bottoms-up build order).
 > **Target Crates**: vyapaar-strategies (Python strategy definitions); cross-references vyapaar-runtime-strategy / vyapaar-runtime-backtest (Rust, not modified here)
 > **Depends on reading**:
 > - (none external)
@@ -39,3 +39,44 @@ Define `BasketManifest`, group the Phase 1 proof-of-concept strategies into a ba
 
 ### Phase 3: Versioning / promotion workflow
 Define the draft → backtested → paper → live promotion workflow for a `StrategyManifest` version: what evidence (which backtest run, which paper-trading window) is required to advance a version's status, and how that status is recorded (likely as a field on the manifest itself, e.g. `promotion_status` plus a reference to the backtest/paper run that justified the promotion).
+
+---
+
+## 4. Implementation Status
+
+**Phase 1 — `StrategyManifest` (done)**: pydantic model in
+`vyapaar_strategies/manifest/` (`StrategyManifest`, `ParameterSpec`,
+`InstrumentSelector`, `CapitalAllocation`) with strict validation (`extra=forbid`,
+lower-snake `name`, semver `version`, `vyapaar_strategies.module:Class`
+reference, exactly-one absolute/weight capital allocation, explicit instruments
+or selection rule). Retrofit proof-of-concept sidecars:
+`manifests/strategies/turtle_breakout.toml` and
+`manifests/strategies/twap_slicer.toml`. `validate_parameters()` cross-checks
+every declared parameter against the strategy class; `instantiate()` builds a
+runnable strategy. No runtime consumption yet (per the doc's scope).
+
+**Phase 2 — `BasketManifest` (done)**: `BasketManifest`, `MemberStrategyRef`
+(weight XOR absolute allocation), and `RiskBudget` (Phase-1 simple caps).
+`_allocations_within_combined_capital` enforces member allocations summing to at
+most `combined_capital` (weights ≤ 1.0, or absolute sums ≤ combined capital, one
+mode per basket). Proof-of-concept sidecar:
+`manifests/baskets/turtle_twap_basket.toml` groups both Phase-1 strategies under
+a `1000000` combined capital and a `max_position_fraction = 0.25` risk cap.
+`vyapaar-ledger-allocation` integration remains out of scope.
+
+**Phase 3 — Promotion workflow (done)**: `PromotionStatus` enum
+(`draft → backtested → paper → live`) and `StrategyManifest.promote()`, which
+moves exactly one stage forward and requires a status-prefixed evidence
+reference (`backtest:…`, `paper:…`, `live:…`); every promotion is appended to
+`promotion_evidence` as a `PromotionRecord` with `recorded_at`.
+
+**Schema & tooling**: `schema/strategy-manifest.schema.json` and
+`schema/basket-manifest.schema.json` (draft-07), plus
+`tools/validate_manifests.py` (schema + model + strategy-class + basket member
+resolution). Consuming `catalog.rs` / `engine.rs` registration in
+`vyapaar-runtime-backtest` is unchanged, as scoped.
+
+**Tests** (`tests/manifests/`, 42 cases): sidecar loading, schema validation,
+capital/weight bounds, promotion chain rules, and catalog cross-references. Full
+gate: `pytest` 119/119 green, `ruff check`/`ruff format --check` clean,
+`mypy vyapaar_strategies` clean.

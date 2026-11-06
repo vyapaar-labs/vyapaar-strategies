@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.vyapaar-labs.io/schema/strategy-manifest.schema.json",
+  "title": "Vyapaar strategy manifest",
+  "description": "Declarative manifests/strategies/*.toml manifest (plan 0001 Phase 1): names a strategy class, its parameter defaults/bounds, target instruments and capital allocation for a versioned, promotable deployment. Exact-capital constraints (weight in (0, 1], exactly one of absolute/weight) are enforced by the StrategyManifest pydantic model.",
+  "type": "object",
+  "required": [
+    "name",
+    "version",
+    "strategy",
+    "parameters",
+    "target_instruments",
+    "capital_allocation"
+  ],
+  "properties": {
+    "name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "strategy": {
+      "type": "string",
+      "pattern": "^vyapaar_strategies\\.[A-Za-z0-9_.]+:[A-Za-z_][A-Za-z0-9_]*$"
+    },
+    "promotion_status": {
+      "type": "string",
+      "enum": ["draft", "backtested", "paper", "live"]
+    },
+    "promotion_evidence": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["status", "evidence_ref", "recorded_at"],
+        "properties": {
+          "status": {
+            "type": "string",
+            "enum": ["backtested", "paper", "live"]
+          },
+          "evidence_ref": {
+            "type": "string",
+            "minLength": 1
+          },
+          "recorded_at": {
+            "type": "string"
+          },
+          "note": {
+            "type": "string"
+          }
+        },
+        "additionalProperties": false
+      }
+    },
+    "parameters": {
+      "type": "object",
+      "additionalProperties": {
+        "type": "object",
+        "required": ["default"],
+        "properties": {
+          "default": {},
+          "min": {},
+          "max": {},
+          "step": {}
+        },
+        "additionalProperties": false
+      }
+    },
+    "target_instruments": {
+      "type": "object",
+      "properties": {
+        "instruments": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "rule": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false,
+      "anyOf": [
+        { "required": ["instruments"] },
+        { "required": ["rule"] }
+      ]
+    },
+    "capital_allocation": {
+      "type": "object",
+      "properties": {
+        "absolute": {
+          "type": ["integer", "number", "string"]
+        },
+        "weight": {
+          "type": ["integer", "number", "string"]
+        }
+      },
+      "additionalProperties": false,
+      "minProperties": 1,
+      "maxProperties": 1
+    }
+  },
+  "additionalProperties": false
+}

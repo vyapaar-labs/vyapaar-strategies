@@ -1,0 +1,17 @@
+basket_name = "turtle_twap_basket"
+version = "0.1.0"
+combined_capital = 1000000
+
+[risk_budget]
+max_position_fraction = 0.25
+max_loss = 100000
+
+[[member_strategies]]
+name = "turtle_breakout"
+version = "0.1.0"
+weight = 0.5
+
+[[member_strategies]]
+name = "twap_slicer"
+version = "0.1.0"
+weight = 0.5

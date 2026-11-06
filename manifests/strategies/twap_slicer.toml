@@ -1,0 +1,28 @@
+name = "twap_slicer"
+version = "0.1.0"
+strategy = "vyapaar_strategies.strategies.execution:TWAPSlicer"
+promotion_status = "draft"
+
+[parameters.instrument]
+default = "NSE:RELIANCE-EQ"
+
+[parameters.total_quantity]
+default = 100
+min = 1
+max = 1000000
+step = 1
+
+[parameters.slices]
+default = 10
+min = 1
+max = 500
+step = 1
+
+[parameters.side]
+default = "buy"
+
+[target_instruments]
+instruments = ["NSE:RELIANCE-EQ"]
+
+[capital_allocation]
+weight = 0.5

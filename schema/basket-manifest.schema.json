@@ -1,0 +1,60 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "https://docs.vyapaar-labs.io/schema/basket-manifest.schema.json",
+  "title": "Vyapaar basket manifest",
+  "description": "Declarative manifests/baskets/*.toml manifest (plan 0001 Phase 2): groups StrategyManifest references under one combined capital/risk budget. The 'member allocations sum to at most combined_capital' constraint and the single-mode (weight XOR allocation) rule are enforced by the BasketManifest pydantic model.",
+  "type": "object",
+  "required": ["basket_name", "version", "combined_capital", "member_strategies"],
+  "properties": {
+    "basket_name": {
+      "type": "string",
+      "pattern": "^[a-z0-9_]+$"
+    },
+    "version": {
+      "type": "string",
+      "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+    },
+    "combined_capital": {
+      "type": ["integer", "number", "string"],
+      "exclusiveMinimum": 0
+    },
+    "risk_budget": {
+      "type": "object",
+      "properties": {
+        "max_position_fraction": {
+          "type": ["integer", "number", "string"]
+        },
+        "max_loss": {
+          "type": ["integer", "number", "string"]
+        }
+      },
+      "additionalProperties": false
+    },
+    "member_strategies": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["name", "version"],
+        "properties": {
+          "name": {
+            "type": "string",
+            "pattern": "^[a-z0-9_]+$"
+          },
+          "version": {
+            "type": "string",
+            "pattern": "^[0-9]+\\.[0-9]+\\.[0-9]+$"
+          },
+          "weight": {
+            "type": ["integer", "number", "string"]
+          },
+          "allocation": {
+            "type": ["integer", "number", "string"]
+          }
+        },
+        "additionalProperties": false
+      }
+    }
+  },
+  "additionalProperties": false
+}

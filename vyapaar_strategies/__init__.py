@@ -8,6 +8,17 @@ simulated context for research-live parity testing.
 from __future__ import annotations
 
 from vyapaar_strategies._compat import VYAAPAAR_AVAILABLE
+from vyapaar_strategies.manifest import (
+    BasketManifest,
+    CapitalAllocation,
+    InstrumentSelector,
+    MemberStrategyRef,
+    ParameterSpec,
+    PromotionRecord,
+    PromotionStatus,
+    RiskBudget,
+    StrategyManifest,
+)
 from vyapaar_strategies.sdk import (
     Bar,
     OrderEvent,
@@ -35,21 +46,30 @@ __version__ = "0.1.0"
 __all__ = [
     "VYAAPAAR_AVAILABLE",
     "Bar",
+    "BasketManifest",
     "BollingerMeanReversion",
+    "CapitalAllocation",
     "CashFuturesArbitrage",
     "CoveredCallWriter",
     "FixedFractional",
+    "InstrumentSelector",
     "MarketMakingStrategy",
+    "MemberStrategyRef",
     "OrderEvent",
     "OrderRequest",
     "OrderSide",
     "OrderStatus",
     "OrderType",
     "Parameter",
+    "ParameterSpec",
+    "PromotionRecord",
+    "PromotionStatus",
     "QuotingStrategy",
+    "RiskBudget",
     "RiskParity",
     "SimulatedContext",
     "Strategy",
+    "StrategyManifest",
     "TWAPSlicer",
     "TimeInForce",
     "TurtleBreakout",
