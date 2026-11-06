@@ -21,7 +21,7 @@
 ## 2. Coding Guidelines (DDD & TDD)
 * **Zero Floats Policy**: Use `decimal.Decimal` for prices, stop levels, and quantities.
 * **TDD & Parallel Test Directory Rule (MANDATORY)**:
-  - Tests live in `tests/` parallel to `src/` (e.g. `tests/unit/`, `tests/integration/`).
+  - Tests live in `tests/` parallel to `src/`, or in a `src/tests/` module directory (e.g. `tests/unit/`, `tests/integration/`).
   - Red-Green-Refactor cycle on every strategy implementation.
 
 ---
