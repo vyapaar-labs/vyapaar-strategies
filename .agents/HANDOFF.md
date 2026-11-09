@@ -54,3 +54,5 @@
 ## Operating Invariants
 * Zero floats in financial math; `Parameter` bounds/step validated at
   assignment; tests live in `tests/` only.
+- `docs/migration-guide.md` decimated: migration steps moved to `docs/design/code-migration-map.md`; verification commands moved to `docs/roadmap/migration-verification.md`; original `migration-guide.md` removed.
+- Code reference docs added: `code-sdk.md` (Strategy base, indicators, parameters), `code-manifest.md` (StrategyManifest, BasketManifest, promotion), `code-strategies.md` (ported StockSharp strategies).
