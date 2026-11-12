@@ -1,8 +1,8 @@
 # `vyapaar-strategies` — Historical Migration Map (honba-strategies → vyapaar-strategies)
 
 > **Tier**: Tier 6C
-> **Source**: `/home/pmallapp/Devel/Finance/honba-workspace/honba-strategies`
-> **Target**: `/home/pmallapp/Devel/Finance/vyapaar-labs/vyapaar-strategies`
+> **Source**: `honba-workspace/honba-strategies`
+> **Target**: `vyapaar-strategies`
 > **Status**: Migration complete.
 
 ## Migration & DDD Refactoring Steps
@@ -20,7 +20,7 @@
 ## Verification Commands
 
 ```bash
-cd /home/pmallapp/Devel/Finance/vyapaar-labs/vyapaar-strategies
+# Run from the repository root
 pytest -q
 ruff check .
 ```

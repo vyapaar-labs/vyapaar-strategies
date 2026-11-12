@@ -3,7 +3,7 @@
 Verification commands for the `honba-strategies → vyapaar-strategies` migration:
 
 ```bash
-cd /home/pmallapp/Devel/Finance/vyapaar-labs/vyapaar-strategies
+# Run from the repository root
 pytest -q
 ruff check .
 ```
