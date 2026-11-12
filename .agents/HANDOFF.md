@@ -1,58 +1,49 @@
 # `vyapaar-strategies` — Inter-Agent Handoff
 
 ## Phase / Slice Status
-* **Layer 3 (COMPLETE, 2026-11-06)**: plan 0001 — Versioned Strategy Manifests &
-  Baskets (all 3 phases). New `vyapaar_strategies/manifest/` package:
-  `StrategyManifest` (name/semver/module:Class/parameters/target_instruments/
-  capital_allocation), `BasketManifest` (member weight-XOR-allocation refs,
-  combined-capital budget, Phase-1 `RiskBudget` caps), `PromotionStatus`
-  workflow (`promote()` = exactly one stage forward + status-prefixed evidence
-  ref `backtest:`/`paper:`/`live:`, audited into `promotion_evidence`).
-  POC sidecars: `manifests/strategies/{turtle_breakout,twap_slicer}.toml`,
-  `manifests/baskets/turtle_twap_basket.toml`. Zone 4: `schema/strategy-manifest
-  .schema.json`, `schema/basket-manifest.schema.json`,
-  `tools/validate_manifests.py`. 42 new tests in `tests/manifests/`.
-  Gate: `pytest` 119/119, `ruff check`/`format --check`, `mypy` all PASS.
-  No runtime (`vyapaar-runtime-backtest`) changes — consumption is cross-ref only.
-* **Tier 6C (COMPLETE)**: Implemented the Production Strategy SDK & Declarative
-  Step Catalog from the sub-guide contracts (source `honba-strategies`
-  unavailable; implemented fresh).
-* Package `vyapaar_strategies/`:
-  * `sdk/`: `Parameter` (declarative, validated bounds + step alignment),
-    `Bar`, order domain (`OrderRequest`/`OrderEvent`/enums), streaming
-    `Decimal` indicators (SMA/EMA/RSI/ATR/Bollinger + cross helpers),
-    `SimulatedContext` (resting limit orders, deterministic fills),
-    `Strategy` base (Jesse-style hooks + `indicators` registry), `QuoteState`
-    mixin (single resting quote per side).
-  * `strategies/`: `turtle`, `mean_reversion`, `market_making`, `quoting`,
-    `arbitrage`, `risk_parity`, `execution` (TWAP/VWAP slicers), `options`
-    (covered call), `sizing` (fixed-fractional).
-* Zone 2 `catalog/`: 10 `step.toml` manifests across all 8 families.
-  Zone 4: `schema/step.schema.json` + `tools/validate_catalog.py` (validates
-  schema + strategy importability).
+* **Tier 6C (COMPLETE, `af20843`)**: Strategy SDK (`sdk/`) + 10 ported strategy
+  classes (`strategies/`) + declarative `catalog/` (10 step.toml, 8 families) +
+  `schema/` + `tools/validate_catalog.py`. Source `honba-strategies` was
+  unavailable; implemented fresh from contracts.
+* **Plan 0001 Layer 3 (COMPLETE, `207a70c`)**: `manifest/` package —
+  `StrategyManifest`, `BasketManifest`, `PromotionStatus`/`promote()`
+  (exactly-one-stage + `backtest:`/`paper:`/`live:` evidence prefixes). POC
+  sidecars `manifests/strategies/{turtle_breakout,twap_slicer}.toml`,
+  `manifests/baskets/turtle_twap_basket.toml`; `schema/*-manifest.schema.json`;
+  `tools/validate_manifests.py`; 42 tests in `tests/manifests/`.
+* **Gate (2026-11-06)**: `pytest` 119/119, `ruff check`/`format --check`,
+  `mypy` all PASS. No runtime (`vyapaar-runtime-backtest`) changes — consumption
+  is cross-ref only.
+* **Docs (this change)**: `docs/roadmap/` dismantled → `docs/design/`
+  (rewritten `architecture.md`, `code-{sdk,strategies,manifest,migration-map}.md`,
+  new `implementation-record.md`), new `docs/gaps/` (0001–0005), `docs/plans/`
+  index updated.
 
 ## Decisions & Discoveries
 * pyproject: removed `rust_decimal`; declared `vyapaar` + `pydantic`.
 * **Zero-float guard (ruff RUF032)**: `Decimal(<float literal>)` is rejected in
   source and tests; all literals are strings.
-* `SimulatedContext` holds resting limit orders re-checked per bar — posting a
-  fresh quote each bar without cancellation would stack duplicates; quoting /
-  market-making strategies therefore track open quotes via `QuoteState` and
-  `on_order_event` (OPEN/COMPLETE).
-* Bollinger bands in zero-volatility regimes (stddev == 0) collapse to a
-  single line; mean reversion guards with `lower < middle` to avoid
-  buy/sell oscillation.
+* `SimulatedContext` holds resting limit orders re-checked per bar — quoting /
+  market-making strategies track open quotes via `QuoteState` +
+  `on_order_event` (OPEN/COMPLETE) so quotes never stack.
+* Bollinger bands in zero-volatility regimes collapse; mean reversion guards
+  with `lower < middle` to avoid buy/sell oscillation.
 * Donchian channels exclude the current bar (`highs[-N-1:-1]`).
+* `on_tick` is a declared stub: neither `Strategy.run` nor
+  `SimulatedContext.run` dispatches ticks (bars only) — gap 0001.
 
 ## Immediate Next Step
-* Layer 4A (`vyapaar-agent/0003` remaining Fincept analytics engines, benefits
-  from Layer 0) and Layer 4B (`vyapaar-agent/0004` free-tier LLM backend, fully
-  independent) are the next layers in the bottoms-up build order. In this repo,
-  next logical slice is a `BasketManifest`-driven multi-strategy run loop when
-  `vyapaar-runtime-backtest` gains basket consumption (out of this repo's scope).
+* Open gaps (see `docs/gaps/README.md`): 0001 tick dispatch, 0002 live
+  `StrategyContext` (High), 0003 catalog step executor, 0004 `BasketManifest`
+  run loop, 0005 Phase-2 risk budget. All cross-repo consumers are out of this
+  repo's scope. In-repo slice with the most leverage: a deterministic
+  catalog-driven smoke test / step runner (gap 0003) using `SimulatedContext`,
+  or a basket run-loop unit test once `vyapaar-runtime-backtest` lands basket
+  consumption.
 
 ## Operating Invariants
 * Zero floats in financial math; `Parameter` bounds/step validated at
   assignment; tests live in `tests/` only.
-- `docs/migration-guide.md` decimated: migration steps moved to `docs/design/code-migration-map.md`; verification commands moved to `docs/roadmap/migration-verification.md`; original `migration-guide.md` removed.
-- Code reference docs added: `code-sdk.md` (Strategy base, indicators, parameters), `code-manifest.md` (StrategyManifest, BasketManifest, promotion), `code-strategies.md` (ported StockSharp strategies).
+* `docs/roadmap/` is gone — completed milestones live in
+  `docs/design/implementation-record.md`; new work goes to `docs/gaps/`
+  (numbered 0006+ if added).
